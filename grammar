@@ -1,0 +1,9 @@
+
+L(G)  = { wcwcw | w (- {a,b}+ }
+
+
+S -> Aa | Ab
+A -> Bc
+B -> Ca | Cb
+C -> Dc
+D -> a | b
