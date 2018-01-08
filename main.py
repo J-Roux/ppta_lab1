@@ -1,5 +1,7 @@
 import unittest
-
+import numpy as np
+import pandas as pd
+import graphviz as gv
 
 def is_terminal(string, Vt):
     if len(string) == 1 and string in Vt:
@@ -59,6 +61,16 @@ def define_grammar_type(P, Vt, Vn):
     else:
         return 'type3'
 
+def merge_dicts(*dict_args):
+    """
+    Given any number of dicts, shallow copy and merge into a new dict,
+    precedence goes to key value pairs in latter dicts.
+    """
+    result = {}
+    for dictionary in dict_args:
+        result.update(dictionary)
+    return result
+
 
 class Test (unittest.TestCase):
     # S -> aSBC | abc
@@ -114,5 +126,50 @@ class Test (unittest.TestCase):
         P = { 'S' : ['Aa', 'Ab'], 'A' : ['Bc'], 'B' : ['Ca', 'Cb'], 'C' : ['Dc'], 'D' : ['a', 'b']}
         self.assertEqual(define_grammar_type(P, Vt, Vn), "type3")
 
+
+    def test_fsm(self):
+        Vt = ['X', 'Y', 'Z', 'W', 'V']
+        Vn = ['0', '1', '~', '#', '&']
+        P = {
+            'X': ['0Y', '1Z', 'e'],
+            'Y': ['0', 'Z', '~W', '#'],
+            'Z': ['1Y', '1W', '0V'],
+            'W': ['0W', '1W', '#'],
+            'V': ['&Z']
+        }
+
+        for i in P:
+            P[i] = [ j + 'N'  if len(j) == 1 and j in Vn else j  for j in P[i] ]
+
+        Pt = P
+
+
+
+        table = []
+        for i in Vn:
+            for key in Pt:
+                table.append({ key : [ j.strip(i) if i in j else None  for j in Pt[key]] })
+
+        result = {}
+        for i in Vt:
+            t = filter(lambda x: x.keys()[0] == i , table)
+            t = { t[0].keys()[0] : [ filter(lambda x: x != None , j[i]) for j in t] }
+            result.update(t)
+
+        fsm = pd.DataFrame(data=result)
+        fsm = fsm.rename_axis(lambda x: Vn[x])
+        g1 = gv.Graph(format='svg')
+
+        print fsm
+       # print np.array(table)
+
+
 if __name__ == '__main__':
     unittest.main()
+
+
+
+
+
+
+
