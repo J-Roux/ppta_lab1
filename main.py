@@ -156,10 +156,21 @@ class Test (unittest.TestCase):
             t = { t[0].keys()[0] : [ filter(lambda x: x != None , j[i]) for j in t] }
             result.update(t)
 
+        if filter(lambda x: filter(lambda y: 'N' in str(y), x), result.values()) != []:
+            result.update({ 'N': [ [] for i in Vn]})
+
         fsm = pd.DataFrame(data=result)
         fsm = fsm.rename_axis(lambda x: Vn[x])
-        g1 = gv.Graph(format='svg')
 
+        g1 = gv.Digraph(format='png')
+        for i in fsm.columns.values:
+            g1.node(i)
+
+        for head in result:
+            for tail, label in zip(result[head], Vn):
+                if tail != []:
+                    g1.edge(head, tail[0], label)
+        g1.render('img/g2')
         print fsm
        # print np.array(table)
 

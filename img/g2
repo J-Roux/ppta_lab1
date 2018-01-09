@@ -1,0 +1,19 @@
+digraph {
+	N
+	V
+	W
+	X
+	Y
+	Z
+	W -> W [label=0]
+	W -> W [label=1]
+	W -> N [label="#"]
+	V -> Z [label="&"]
+	Y -> N [label=0]
+	Y -> W [label="~"]
+	Y -> N [label="#"]
+	X -> Y [label=0]
+	X -> Z [label=1]
+	Z -> V [label=0]
+	Z -> Y [label=1]
+}
